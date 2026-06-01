@@ -16,6 +16,7 @@ export interface SurveyAnswers {
   pilot_budget?: string;
   followup_intent?: string;
   city?: string;
+  other_text?: string;
   contact_name?: string;
   contact_info?: string;
 }
@@ -49,12 +50,19 @@ export interface Option {
 export interface Question {
   id: keyof SurveyAnswers;
   section: string;
-  type: "single" | "multi";
+  type: "single" | "multi" | "slider";
   text: string;
   hint?: string;
   max?: number;
   options: Option[];
   contact?: boolean; // last question shows contact fields
+  // slider config (when type === "slider")
+  sliderMin?: number;
+  sliderMax?: number;
+  sliderStep?: number;
+  sliderPrefix?: string;
+  // allow a free-text "Other" option (the option val must be "Other")
+  allowOther?: boolean;
 }
 
 // ============================================================
@@ -96,14 +104,14 @@ export const QUESTIONS: Question[] = [
   {
     id: "monthly_budget",
     section: "Marketing Spend",
-    type: "single",
+    type: "slider",
+    sliderMin: 0,
+    sliderMax: 1000000,
+    sliderStep: 10000,
+    sliderPrefix: "₹",
     text: "What is your monthly marketing budget?",
-    options: [
-      { val: "Under5k", label: "Under ₹5,000", score: 3 },
-      { val: "5k-10k", label: "₹5,000–₹10,000", score: 12 },
-      { val: "10k-20k", label: "₹10,000–₹20,000", score: 20 },
-      { val: "Over20k", label: "Over ₹20,000", score: 25 },
-    ],
+    hint: "Drag to your approximate monthly spend",
+    options: [],
   },
   {
     id: "channels",
@@ -118,7 +126,6 @@ export const QUESTIONS: Question[] = [
       { val: "Influencer", label: "Influencer / creator marketing" },
       { val: "Outdoor", label: "Outdoor / billboards / hoardings" },
       { val: "PrintTVRadio", label: "Print / TV / radio" },
-      { val: "WOM", label: "Word of mouth / referrals only" },
     ],
   },
   {
@@ -126,6 +133,7 @@ export const QUESTIONS: Question[] = [
     section: "Pain Points",
     type: "multi",
     max: 2,
+    allowOther: true,
     hint: "Select up to 2 options",
     text: "What is your biggest frustration with advertising today?",
     options: [
@@ -134,6 +142,7 @@ export const QUESTIONS: Question[] = [
       { val: "TooExpensive", label: "Too expensive for the results", sub: "CPMs and CPCs keep rising", score: 2 },
       { val: "AdFatigue", label: "People ignore or skip ads", sub: "Banner blindness, ad fatigue", score: 3 },
       { val: "HyperLocal", label: "Can't target specific city areas", sub: "Need hyperlocal reach", score: 4 },
+      { val: "Other", label: "Other", sub: "Tell us in your own words", score: 3 },
     ],
   },
   {
@@ -176,15 +185,14 @@ export const QUESTIONS: Question[] = [
   {
     id: "pilot_budget",
     section: "New Format",
-    type: "single",
+    type: "slider",
+    sliderMin: 0,
+    sliderMax: 1000000,
+    sliderStep: 10000,
+    sliderPrefix: "₹",
     text: "If the format had strong proof — what budget would you allocate for a 30-day test?",
-    options: [
-      { val: "Nothing", label: "Nothing — not open to testing new formats", score: 0 },
-      { val: "Under5k", label: "Under ₹5,000", score: 5 },
-      { val: "5k-10k", label: "₹5,000–₹10,000", score: 10 },
-      { val: "10k-20k", label: "₹10,000–₹20,000", score: 16 },
-      { val: "Over20k", label: "Over ₹20,000", score: 22 },
-    ],
+    hint: "Drag to your test budget",
+    options: [],
   },
   {
     id: "city",
@@ -193,14 +201,12 @@ export const QUESTIONS: Question[] = [
     text: "Which city is your primary market?",
     options: [
       { val: "Mumbai", label: "Mumbai" },
-      { val: "Delhi", label: "Delhi" },
-      { val: "DelhiNCR", label: "Delhi NCR" },
+      { val: "Delhi", label: "Delhi / Delhi NCR" },
       { val: "Bangalore", label: "Bangalore" },
       { val: "Hyderabad", label: "Hyderabad" },
       { val: "Pune", label: "Pune" },
       { val: "Chennai", label: "Chennai" },
       { val: "Kolkata", label: "Kolkata" },
-      { val: "Other", label: "Other / nationwide" },
     ],
   },
   {
@@ -208,12 +214,12 @@ export const QUESTIONS: Question[] = [
     section: "Follow-up",
     type: "single",
     contact: true,
-    text: "If we share results from other brands in your industry using this format, would you be open to a 15-minute call?",
+    text: "Brands in your industry are already seeing the data behind this. Is 15 minutes too much to ask before you write off something that could move your numbers?",
     options: [
-      { val: "YesThisWeek", label: "Yes — reach out this week", score: 10 },
-      { val: "YesNextMonth", label: "Yes — but next month works better", score: 7 },
-      { val: "CaseStudiesFirst", label: "Send me the case studies first, then I'll decide", score: 4 },
-      { val: "NoThanks", label: "No thanks", score: 0 },
+      { val: "YesThisWeek", label: "No — 15 minutes is worth it, reach out this week", score: 10 },
+      { val: "YesNextMonth", label: "No — worth it, but next month suits me better", score: 7 },
+      { val: "CaseStudiesFirst", label: "Send the data first, then I'll decide", score: 4 },
+      { val: "NoThanks", label: "Yes — I'm genuinely not interested", score: 0 },
     ],
   },
 ];
@@ -224,5 +230,5 @@ export const INDUSTRIES = [
 ];
 
 export const UK_CITIES = [
-  "Mumbai", "Delhi", "DelhiNCR", "Bangalore", "Hyderabad", "Pune", "Chennai", "Kolkata",
+  "Mumbai", "Delhi", "Bangalore", "Hyderabad", "Pune", "Chennai", "Kolkata",
 ];

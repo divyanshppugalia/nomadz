@@ -19,7 +19,8 @@ create table if not exists public.responses (
   format_reaction text,
   pilot_budget    text,            -- Nothing | Upto1k | 1k-3k | 3k-10k | Over10k
   followup_intent text,
-  city            text,            -- London | Manchester | Birmingham | Leeds | Liverpool | Glasgow | Bristol | Other
+  city            text,            -- Mumbai | Delhi | Bangalore | Hyderabad | Pune | Chennai | Kolkata
+  other_text      text,            -- free-text when respondent picks "Other" on the pain question
 
   -- contact (optional)
   contact_name    text,

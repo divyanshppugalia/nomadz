@@ -31,8 +31,13 @@ export default function SurveyClient() {
   const answeredCurrent = (() => {
     const v = answers[q?.id as keyof SurveyAnswers];
     if (q?.type === "multi") return Array.isArray(v) && v.length > 0;
+    if (q?.type === "slider") return v !== undefined && v !== null && v !== "";
     return !!v;
   })();
+
+  const setSlider = (val: string) => {
+    setAnswers((a) => ({ ...a, [q.id]: val }));
+  };
 
   const selectSingle = (val: string) => {
     setAnswers((a) => ({ ...a, [q.id]: val }));
@@ -90,7 +95,8 @@ export default function SurveyClient() {
         else next();
       }
       if (e.key === "Backspace" && (e.target as HTMLElement).tagName !== "INPUT") back();
-      // letter keys select options
+      // letter keys select options (ignore while typing in a text field)
+      if ((e.target as HTMLElement).tagName === "INPUT") return;
       const idx = "abcdefghijk".indexOf(e.key.toLowerCase());
       if (idx >= 0 && idx < q.options.length) {
         const opt = q.options[idx];
@@ -208,6 +214,36 @@ export default function SurveyClient() {
           <h2 className="font-head font-bold text-2xl md:text-[28px] leading-snug mb-2">{q.text}</h2>
           {q.hint && <p className="muted text-sm mb-5">{q.hint}</p>}
 
+          {/* SLIDER question */}
+          {q.type === "slider" && (
+            <div className="mt-8">
+              <div className="text-center mb-6">
+                <span className="font-head font-extrabold text-4xl text-accent">
+                  {q.sliderPrefix}{Number(answers[q.id as keyof SurveyAnswers] ?? q.sliderMin ?? 0).toLocaleString("en-IN")}
+                </span>
+                {Number(answers[q.id as keyof SurveyAnswers] ?? 0) >= (q.sliderMax ?? 0) && (
+                  <span className="muted text-sm ml-1">+</span>
+                )}
+              </div>
+              <input
+                type="range"
+                min={q.sliderMin ?? 0}
+                max={q.sliderMax ?? 100}
+                step={q.sliderStep ?? 1}
+                value={Number(answers[q.id as keyof SurveyAnswers] ?? q.sliderMin ?? 0)}
+                onChange={(e) => setSlider(e.target.value)}
+                className="w-full accent-[#ff5533] h-2"
+              />
+              <div className="flex justify-between muted text-xs mt-2">
+                <span>{q.sliderPrefix}{(q.sliderMin ?? 0).toLocaleString("en-IN")}</span>
+                <span>{q.sliderPrefix}{(q.sliderMax ?? 0).toLocaleString("en-IN")}+</span>
+              </div>
+              <p className="muted text-xs text-center mt-4">Drag the slider, then press Continue.</p>
+            </div>
+          )}
+
+          {/* OPTION question (single / multi) */}
+          {q.type !== "slider" && (
           <div className="flex flex-col gap-2.5 mt-5">
             {q.options.map((o, i) => {
               const v = answers[q.id as keyof SurveyAnswers];
@@ -233,6 +269,20 @@ export default function SurveyClient() {
               );
             })}
           </div>
+          )}
+
+          {/* "Other" free-text box — shows only when Other is selected */}
+          {q.allowOther && (() => {
+            const v = answers[q.id as keyof SurveyAnswers];
+            const otherChosen = Array.isArray(v) ? v.includes("Other") : v === "Other";
+            if (!otherChosen) return null;
+            return (
+              <input className="w-full bg-card border border-white/10 rounded-xl2 px-4 py-3 mt-3 outline-none focus:border-accent"
+                placeholder="Tell us in your own words…"
+                value={answers.other_text ?? ""}
+                onChange={(e) => setAnswers((a) => ({ ...a, other_text: e.target.value }))} />
+            );
+          })()}
 
           {/* contact fields on last question */}
           {q.contact && (

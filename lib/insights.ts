@@ -34,7 +34,7 @@ export function generateInsights(rows: ResponseRow[]): Insight[] {
     });
 
   // 2. High spenders
-  const highSpend = rows.filter((r) => ["10k-20k", "Over20k"].includes(r.monthly_budget ?? "")).length;
+  const highSpend = rows.filter((r) => parseInt(r.monthly_budget ?? "0", 10) >= 50000).length;
   out.push({
     stat: `${pct(highSpend, n)}%`,
     text: `of respondents spend more than £5,000 per month on marketing.`,
@@ -78,7 +78,7 @@ export function generateInsights(rows: ResponseRow[]): Insight[] {
     });
 
   // 6. Pilot willingness
-  const willing = rows.filter((r) => !["Nothing"].includes(r.pilot_budget ?? "")).length;
+  const willing = rows.filter((r) => parseInt(r.pilot_budget ?? "0", 10) > 0).length;
   out.push({ stat: `${pct(willing, n)}%`, text: `are willing to allocate budget to a 30-day pilot if proof is provided.`, tone: "positive" });
 
   // 7. Hot lead rate
@@ -109,7 +109,7 @@ export function executiveSummary(rows: ResponseRow[]): string {
   if (n === 0) return "No responses collected yet. Share the survey to begin gathering market validation data.";
   const avgPmf = Math.round(rows.reduce((s, r) => s + r.pmf_score, 0) / n);
   const hot = rows.filter((r) => ["hot", "enterprise"].includes(r.lead_tier)).length;
-  const willing = rows.filter((r) => r.pilot_budget !== "Nothing").length;
+  const willing = rows.filter((r) => parseInt(r.pilot_budget ?? "0", 10) > 0).length;
   const byInd: Record<string, number> = {};
   rows.forEach((r) => (byInd[r.industry ?? "Other"] = (byInd[r.industry ?? "Other"] ?? 0) + 1));
   const topInd = Object.entries(byInd).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "—";

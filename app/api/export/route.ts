@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 const COLS = [
   "created_at", "industry", "company_size", "monthly_budget", "channels",
   "pain_point", "offline_belief", "ooh_experience", "format_reaction",
-  "pilot_budget", "followup_intent", "city", "contact_name", "contact_info",
+  "pilot_budget", "followup_intent", "city", "other_text", "contact_name", "contact_info",
   "pmf_score", "lead_tier", "high_intent", "persona",
   "budget_score", "pain_score", "reach_score", "innovation_score", "meeting_score", "pilot_score",
 ];

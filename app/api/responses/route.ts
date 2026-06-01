@@ -29,6 +29,7 @@ export async function POST(req: NextRequest) {
       pilot_budget: body.pilot_budget ?? null,
       followup_intent: body.followup_intent ?? null,
       city: body.city ?? null,
+      other_text: body.other_text ?? null,
       contact_name: body.contact_name ?? null,
       contact_info: body.contact_info ?? null,
       ...breakdown,

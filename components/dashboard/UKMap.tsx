@@ -11,8 +11,7 @@ import { ResponseRow } from "@/types";
 
 // Approx relative positions on a 400x520 India canvas.
 const CITY_POS: Record<string, { x: number; y: number }> = {
-  Delhi: { x: 205, y: 150 },
-  DelhiNCR: { x: 230, y: 165 },
+  Delhi: { x: 215, y: 158 },
   Kolkata: { x: 290, y: 235 },
   Mumbai: { x: 150, y: 290 },
   Pune: { x: 170, y: 305 },

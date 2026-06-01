@@ -80,8 +80,8 @@ export default function Respondents() {
                 <td className="px-3 py-2.5">{r.industry}</td>
                 <td className="px-3 py-2.5">{r.city}</td>
                 <td className="px-3 py-2.5">{r.company_size}</td>
-                <td className="px-3 py-2.5 whitespace-nowrap">{r.monthly_budget}</td>
-                <td className="px-3 py-2.5 whitespace-nowrap">{r.pilot_budget}</td>
+                <td className="px-3 py-2.5 whitespace-nowrap">{r.monthly_budget ? "₹" + Number(r.monthly_budget).toLocaleString("en-IN") : "—"}</td>
+                <td className="px-3 py-2.5 whitespace-nowrap">{r.pilot_budget ? "₹" + Number(r.pilot_budget).toLocaleString("en-IN") : "—"}</td>
                 <td className="px-3 py-2.5 muted text-xs whitespace-nowrap">{r.persona}</td>
                 <td className="px-3 py-2.5 muted text-xs whitespace-nowrap">{r.contact_info || "—"}</td>
               </tr>

@@ -22,8 +22,18 @@ function groupCount<T>(rows: T[], key: (r: T) => string) {
   return Object.entries(m).map(([name, value]) => ({ name, value }));
 }
 
-const BUDGET_ORDER = ["Under5k", "5k-10k", "10k-20k", "Over20k"];
-const BUDGET_LABEL: Record<string, string> = { Under5k: "<₹5k", "5k-10k": "₹5–10k", "10k-20k": "₹10–20k", Over20k: ">₹20k" };
+// Budgets are slider numbers (stored as strings). Bucket them for the chart.
+const BUDGET_BUCKETS = [
+  { name: "<₹10k", min: 0, max: 10000 },
+  { name: "₹10–50k", min: 10000, max: 50000 },
+  { name: "₹50k–1L", min: 50000, max: 100000 },
+  { name: "₹1L–5L", min: 100000, max: 500000 },
+  { name: "₹5L+", min: 500000, max: Infinity },
+];
+function budgetNum(v?: string): number {
+  const n = parseInt(v ?? "", 10);
+  return isNaN(n) ? 0 : n;
+}
 
 export default function Dashboard() {
   const { pw } = useAdmin();
@@ -34,7 +44,7 @@ export default function Dashboard() {
     const avgPmf = n ? Math.round(rows.reduce((s, r) => s + r.pmf_score, 0) / n) : 0;
     const hot = rows.filter((r) => ["hot", "enterprise"].includes(r.lead_tier)).length;
     const warm = rows.filter((r) => r.lead_tier === "warm").length;
-    const highBudget = rows.filter((r) => ["10k-20k", "Over20k"].includes(r.monthly_budget ?? "")).length;
+    const highBudget = rows.filter((r) => budgetNum(r.monthly_budget) >= 50000).length;
     const meetings = rows.filter((r) => ["YesThisWeek", "YesNextMonth"].includes(r.followup_intent ?? "")).length;
     return { n, avgPmf, hot, warm, highBudget, meetings };
   }, [rows]);
@@ -48,8 +58,13 @@ export default function Dashboard() {
   }, [rows]);
 
   const budgetData = useMemo(() => {
-    const counts = groupCount(rows, (r) => r.monthly_budget ?? "—");
-    return BUDGET_ORDER.map((b) => ({ name: BUDGET_LABEL[b], value: counts.find((c) => c.name === b)?.value ?? 0 }));
+    return BUDGET_BUCKETS.map((b) => ({
+      name: b.name,
+      value: rows.filter((r) => {
+        const n = budgetNum(r.monthly_budget);
+        return n >= b.min && n < b.max;
+      }).length,
+    }));
   }, [rows]);
 
   const industryOpp = useMemo(() => {
@@ -61,7 +76,7 @@ export default function Dashboard() {
   const funnelData = useMemo(() => {
     const aware = rows.length;
     const interested = rows.filter((r) => ["PilotNow", "InterestedProof", "Maybe"].includes(r.format_reaction ?? "")).length;
-    const pilotReady = rows.filter((r) => !["Nothing"].includes(r.pilot_budget ?? "")).length;
+    const pilotReady = rows.filter((r) => budgetNum(r.pilot_budget) > 0).length;
     const meeting = rows.filter((r) => ["YesThisWeek", "YesNextMonth"].includes(r.followup_intent ?? "")).length;
     return [
       { name: "Responded", value: aware, fill: PALETTE[0] },
