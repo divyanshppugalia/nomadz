@@ -22,8 +22,8 @@ function groupCount<T>(rows: T[], key: (r: T) => string) {
   return Object.entries(m).map(([name, value]) => ({ name, value }));
 }
 
-const BUDGET_ORDER = ["Under1k", "1k-5k", "5k-20k", "Over20k"];
-const BUDGET_LABEL: Record<string, string> = { Under1k: "<£1k", "1k-5k": "£1–5k", "5k-20k": "£5–20k", Over20k: ">£20k" };
+const BUDGET_ORDER = ["Under5k", "5k-10k", "10k-20k", "Over20k"];
+const BUDGET_LABEL: Record<string, string> = { Under5k: "<₹5k", "5k-10k": "₹5–10k", "10k-20k": "₹10–20k", Over20k: ">₹20k" };
 
 export default function Dashboard() {
   const { pw } = useAdmin();
@@ -34,7 +34,7 @@ export default function Dashboard() {
     const avgPmf = n ? Math.round(rows.reduce((s, r) => s + r.pmf_score, 0) / n) : 0;
     const hot = rows.filter((r) => ["hot", "enterprise"].includes(r.lead_tier)).length;
     const warm = rows.filter((r) => r.lead_tier === "warm").length;
-    const highBudget = rows.filter((r) => ["5k-20k", "Over20k"].includes(r.monthly_budget ?? "")).length;
+    const highBudget = rows.filter((r) => ["10k-20k", "Over20k"].includes(r.monthly_budget ?? "")).length;
     const meetings = rows.filter((r) => ["YesThisWeek", "YesNextMonth"].includes(r.followup_intent ?? "")).length;
     return { n, avgPmf, hot, warm, highBudget, meetings };
   }, [rows]);
@@ -74,7 +74,13 @@ export default function Dashboard() {
   const radarData = useMemo(() => {
     const pains = ["ROI", "WrongAudience", "TooExpensive", "AdFatigue", "HyperLocal"];
     const label: Record<string, string> = { ROI: "ROI", WrongAudience: "Audience", TooExpensive: "Cost", AdFatigue: "Fatigue", HyperLocal: "Hyperlocal" };
-    return pains.map((p) => ({ pain: label[p], value: rows.filter((r) => r.pain_point === p).length }));
+    return pains.map((p) => ({
+      pain: label[p],
+      value: rows.filter((r) => {
+        const pp = r.pain_point;
+        return Array.isArray(pp) ? pp.includes(p) : pp === p;
+      }).length,
+    }));
   }, [rows]);
 
   const trendData = useMemo(() => {

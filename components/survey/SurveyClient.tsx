@@ -106,32 +106,42 @@ export default function SurveyClient() {
   if (!started) {
     return (
       <section className="min-h-[100svh] flex flex-col items-center justify-center text-center px-6 py-20 relative overflow-hidden">
+        {/* full-screen cover image background */}
+        <div className="absolute inset-0 pointer-events-none"
+             style={{
+               backgroundImage: "url('/cover.png')",
+               backgroundSize: "cover",
+               backgroundPosition: "center",
+             }} />
+        {/* dark overlay so text stays readable on top of the image */}
+        <div className="absolute inset-0 pointer-events-none"
+             style={{ background: "rgba(10,10,14,0.62)" }} />
         <div className="absolute w-[700px] h-[700px] rounded-full -top-52 left-1/2 animate-pulseGlow pointer-events-none"
              style={{ background: "radial-gradient(circle, rgba(255,85,51,0.18) 0%, transparent 70%)" }} />
-        <span className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-8 text-xs font-head font-bold tracking-widest uppercase text-accent2"
+        <span className="relative inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-8 text-xs font-head font-bold tracking-widest uppercase text-accent2"
               style={{ background: "rgba(255,85,51,0.12)", border: "1px solid rgba(255,85,51,0.3)" }}>
-          <span className="w-2 h-2 rounded-full bg-accent animate-blink" /> Nomadz · United Kingdom
+          <span className="w-2 h-2 rounded-full bg-accent animate-blink" /> Nomadz · India
         </span>
-        <h1 className="font-head font-extrabold leading-[1.05] tracking-tight mb-5 max-w-2xl"
+        <h1 className="relative font-head font-extrabold leading-[1.05] tracking-tight mb-5 max-w-2xl"
             style={{ fontSize: "clamp(36px,7vw,68px)" }}>
           How does your brand{" "}
           <em className="not-italic bg-gradient-to-r from-accent to-accent2 bg-clip-text text-transparent">
             reach the city?
           </em>
         </h1>
-        <p className="text-[17px] muted max-w-md mx-auto mb-10 font-light">
-          Quick research on how UK brands approach advertising. Anonymous. No sales pitch. Under 3 minutes.
+        <p className="relative text-[17px] text-white/70 max-w-md mx-auto mb-10 font-light">
+          Quick research on how Indian brands approach advertising. Anonymous. No sales pitch. Under 3 minutes.
         </p>
-        <div className="flex gap-2.5 flex-wrap justify-center mb-11">
-          {["⏱ Under 3 min", "🔒 Anonymous", "📊 11 Questions", "🇬🇧 UK Market"].map((p) => (
-            <span key={p} className="bg-card border border-white/10 rounded-full px-3.5 py-1.5 text-[13px] muted">{p}</span>
+        <div className="relative flex gap-2.5 flex-wrap justify-center mb-11">
+          {["⏱ Under 3 min", "🔒 Anonymous", "📊 11 Questions", "🇮🇳 India Market"].map((p) => (
+            <span key={p} className="bg-card/80 border border-white/10 rounded-full px-3.5 py-1.5 text-[13px] text-white/70">{p}</span>
           ))}
         </div>
         <button onClick={() => setStarted(true)}
-          className="inline-flex items-center gap-2.5 bg-accent text-white font-head font-bold text-base rounded-full px-9 py-4 shadow-glow hover:shadow-glowLg hover:-translate-y-0.5 transition">
+          className="relative inline-flex items-center gap-2.5 bg-accent text-white font-head font-bold text-base rounded-full px-9 py-4 shadow-glow hover:shadow-glowLg hover:-translate-y-0.5 transition">
           Start the Survey <span>→</span>
         </button>
-        <p className="muted text-xs mt-6">Tip: use your keyboard — letter keys to pick, Enter to continue.</p>
+        <p className="relative text-white/50 text-xs mt-6">Tip: use your keyboard — letter keys to pick, Enter to continue.</p>
       </section>
     );
   }
@@ -150,7 +160,7 @@ export default function SurveyClient() {
         </span>
         {result.high && (
           <div className="mt-4 text-sm text-accent2 bg-accent/10 border border-accent/30 rounded-full px-4 py-2">
-            🔥 High-intent respondent · pilot budget above £3,000
+            🔥 High-intent respondent · pilot budget above ₹10,000
           </div>
         )}
         <h2 className="font-head font-extrabold text-3xl mt-6 mb-3">

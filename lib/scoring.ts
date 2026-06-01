@@ -18,12 +18,19 @@ function scoreOf(qid: string, val?: string): number {
   return SCORE_MAP[qid]?.[val] ?? 0;
 }
 
+// Pain point can now be multiple selections — sum their scores.
+function painScoreTotal(pain?: string | string[]): number {
+  if (!pain) return 0;
+  const arr = Array.isArray(pain) ? pain : [pain];
+  return arr.reduce((s, p) => s + scoreOf("pain_point", p), 0);
+}
+
 // ----- PMF SCORE (0-100) ------------------------------------
 // Sums the scored questions, mirroring the original matrix.
 export function calcPmf(a: SurveyAnswers): number {
   const total =
     scoreOf("monthly_budget", a.monthly_budget) +
-    scoreOf("pain_point", a.pain_point) +
+    painScoreTotal(a.pain_point) +
     scoreOf("offline_belief", a.offline_belief) +
     scoreOf("ooh_experience", a.ooh_experience) +
     scoreOf("format_reaction", a.format_reaction) +
@@ -34,16 +41,16 @@ export function calcPmf(a: SurveyAnswers): number {
 
 // ----- HIGH-INTENT FLAG -------------------------------------
 export function isHighIntent(a: SurveyAnswers): boolean {
-  return ["3k-10k", "Over10k"].includes(a.pilot_budget ?? "");
+  return ["10k-20k", "Over20k"].includes(a.pilot_budget ?? "");
 }
 
 // ----- ENTERPRISE FLAG --------------------------------------
 // Big budget brand willing to spend big on a pilot.
 function isEnterprise(a: SurveyAnswers): boolean {
-  const bigBudget = ["5k-20k", "Over20k"].includes(a.monthly_budget ?? "");
-  const bigPilot = a.pilot_budget === "Over10k";
+  const bigBudget = ["10k-20k", "Over20k"].includes(a.monthly_budget ?? "");
+  const bigPilot = a.pilot_budget === "Over20k";
   const bigCo = a.company_size === "200+";
-  return (bigPilot && bigBudget) || (bigBudget && bigCo && a.pilot_budget === "3k-10k");
+  return (bigPilot && bigBudget) || (bigBudget && bigCo && a.pilot_budget === "10k-20k");
 }
 
 // ----- TIER -------------------------------------------------
@@ -56,16 +63,21 @@ export function calcTier(score: number, a: SurveyAnswers): LeadTier {
 
 // ----- LEAD-SCORING COMPONENTS (0-100 each, normalised) -----
 function leadComponents(a: SurveyAnswers) {
-  const budgetMap: Record<string, number> = { Under1k: 20, "1k-5k": 50, "5k-20k": 80, Over20k: 100 };
+  const budgetMap: Record<string, number> = { Under5k: 20, "5k-10k": 50, "10k-20k": 80, Over20k: 100 };
   const reachMap: Record<string, number> = { HyperLocal: 100, WrongAudience: 80, AdFatigue: 60, ROI: 50, TooExpensive: 40 };
   const innovationMap: Record<string, number> = { PilotNow: 100, InterestedProof: 75, Maybe: 45, Unlikely: 15, No: 0 };
   const meetingMap: Record<string, number> = { YesThisWeek: 100, YesNextMonth: 70, CaseStudiesFirst: 40, NoThanks: 0 };
-  const pilotMap: Record<string, number> = { Over10k: 100, "3k-10k": 80, "1k-3k": 55, Upto1k: 30, Nothing: 0 };
+  const pilotMap: Record<string, number> = { Over20k: 100, "10k-20k": 80, "5k-10k": 55, Under5k: 30, Nothing: 0 };
+
+  // pain can be multiple — take the strongest reach signal among them
+  const pains = Array.isArray(a.pain_point) ? a.pain_point : a.pain_point ? [a.pain_point] : [];
+  const reach = pains.length ? Math.max(...pains.map((p) => reachMap[p] ?? 30)) : 30;
+  const painPts = Math.min(painScoreTotal(a.pain_point), 5);
 
   return {
     budget_score: budgetMap[a.monthly_budget ?? ""] ?? 0,
-    pain_score: Math.round((scoreOf("pain_point", a.pain_point) / 5) * 100),
-    reach_score: reachMap[a.pain_point ?? ""] ?? 30,
+    pain_score: Math.round((painPts / 5) * 100),
+    reach_score: reach,
     innovation_score: innovationMap[a.format_reaction ?? ""] ?? 0,
     meeting_score: meetingMap[a.followup_intent ?? ""] ?? 0,
     pilot_score: pilotMap[a.pilot_budget ?? ""] ?? 0,
@@ -78,7 +90,7 @@ export function calcPersona(a: SurveyAnswers): string {
   const ind = a.industry;
   const size = a.company_size;
   const hot = ["PilotNow", "InterestedProof"].includes(a.format_reaction ?? "");
-  const bigBudget = ["5k-20k", "Over20k"].includes(a.monthly_budget ?? "");
+  const bigBudget = ["10k-20k", "Over20k"].includes(a.monthly_budget ?? "");
 
   if (bigBudget && size === "200+") return "High-Spend Enterprise Marketer";
   if (ind === "D2C" && hot) return "Growth-Hungry D2C Founder";

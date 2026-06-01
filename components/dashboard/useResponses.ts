@@ -35,7 +35,7 @@ export function useResponses(pw: string) {
         seen.current.add(r.id);
         setRows((prev) => [r, ...prev]);
         // fire alert for high-value leads
-        if (r.pmf_score > 80 || r.lead_tier === "enterprise" || r.pilot_budget === "Over10k") {
+        if (r.pmf_score > 80 || r.lead_tier === "enterprise" || r.pilot_budget === "Over20k") {
           setAlert(r);
           setTimeout(() => setAlert(null), 8000);
         }

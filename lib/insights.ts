@@ -22,7 +22,10 @@ export function generateInsights(rows: ResponseRow[]): Insight[] {
   if (n === 0) return out;
 
   // 1. ROI measurement pain
-  const roiPain = rows.filter((r) => r.pain_point === "ROI").length;
+  const roiPain = rows.filter((r) => {
+    const pp = r.pain_point;
+    return Array.isArray(pp) ? pp.includes("ROI") : pp === "ROI";
+  }).length;
   if (roiPain > 0)
     out.push({
       stat: `${pct(roiPain, n)}%`,
@@ -31,7 +34,7 @@ export function generateInsights(rows: ResponseRow[]): Insight[] {
     });
 
   // 2. High spenders
-  const highSpend = rows.filter((r) => ["5k-20k", "Over20k"].includes(r.monthly_budget ?? "")).length;
+  const highSpend = rows.filter((r) => ["10k-20k", "Over20k"].includes(r.monthly_budget ?? "")).length;
   out.push({
     stat: `${pct(highSpend, n)}%`,
     text: `of respondents spend more than £5,000 per month on marketing.`,

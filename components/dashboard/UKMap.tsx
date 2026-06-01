@@ -9,15 +9,16 @@ import { useAdmin } from "./AdminGate";
 import { useResponses } from "./useResponses";
 import { ResponseRow } from "@/types";
 
-// Approx relative positions on a 400x520 UK canvas.
+// Approx relative positions on a 400x520 India canvas.
 const CITY_POS: Record<string, { x: number; y: number }> = {
-  London: { x: 255, y: 400 },
-  Manchester: { x: 200, y: 290 },
-  Birmingham: { x: 210, y: 340 },
-  Leeds: { x: 230, y: 270 },
-  Liverpool: { x: 175, y: 295 },
-  Glasgow: { x: 165, y: 150 },
-  Bristol: { x: 180, y: 385 },
+  Delhi: { x: 205, y: 150 },
+  DelhiNCR: { x: 230, y: 165 },
+  Kolkata: { x: 290, y: 235 },
+  Mumbai: { x: 150, y: 290 },
+  Pune: { x: 170, y: 305 },
+  Hyderabad: { x: 210, y: 320 },
+  Bangalore: { x: 200, y: 380 },
+  Chennai: { x: 235, y: 390 },
 };
 
 function pmfColor(p: number) {
@@ -58,14 +59,14 @@ export default function UKMap() {
 
   return (
     <div>
-      <h1 className="font-head font-extrabold text-3xl mb-1">UK Market Map</h1>
+      <h1 className="font-head font-extrabold text-3xl mb-1">India Market Map</h1>
       <p className="muted mb-6">Bubble size = response volume · colour = avg PMF. Click a city for detail.</p>
 
       <div className="grid lg:grid-cols-[1fr_360px] gap-5">
         <div className="glass rounded-xl2 p-5 flex justify-center">
           <svg viewBox="0 0 400 520" className="w-full max-w-md">
-            {/* stylised UK silhouette */}
-            <path d="M150 90 L185 70 L200 110 L240 120 L225 160 L255 175 L240 215 L270 235 L250 290 L285 320 L260 360 L290 400 L255 440 L230 420 L210 450 L195 415 L165 405 L185 360 L160 330 L185 300 L150 280 L175 240 L150 215 L170 180 L145 150 Z"
+            {/* stylised India silhouette */}
+            <path d="M180 110 L210 95 L245 105 L270 95 L260 130 L290 150 L280 185 L300 210 L285 245 L265 270 L255 310 L240 360 L225 410 L210 445 L200 410 L195 360 L185 320 L170 300 L150 285 L165 250 L150 215 L160 175 L150 145 L170 125 Z"
               fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" />
             {Object.entries(CITY_POS).map(([city, pos]) => {
               const s = (cityStats as any)[city];

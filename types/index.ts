@@ -9,7 +9,7 @@ export interface SurveyAnswers {
   company_size?: string;
   monthly_budget?: string;
   channels?: string[];
-  pain_point?: string;
+  pain_point?: string | string[];
   offline_belief?: string;
   ooh_experience?: string;
   format_reaction?: string;
@@ -99,10 +99,10 @@ export const QUESTIONS: Question[] = [
     type: "single",
     text: "What is your monthly marketing budget?",
     options: [
-      { val: "Under1k", label: "Under £1,000", score: 3 },
-      { val: "1k-5k", label: "£1,000–£5,000", score: 12 },
-      { val: "5k-20k", label: "£5,000–£20,000", score: 20 },
-      { val: "Over20k", label: "Over £20,000", score: 25 },
+      { val: "Under5k", label: "Under ₹5,000", score: 3 },
+      { val: "5k-10k", label: "₹5,000–₹10,000", score: 12 },
+      { val: "10k-20k", label: "₹10,000–₹20,000", score: 20 },
+      { val: "Over20k", label: "Over ₹20,000", score: 25 },
     ],
   },
   {
@@ -111,7 +111,7 @@ export const QUESTIONS: Question[] = [
     type: "multi",
     max: 3,
     hint: "Select up to 3 options",
-    text: "Which channels take the biggest share of your budget?",
+    text: "Which channels take the largest share of your budget?",
     options: [
       { val: "SocialMedia", label: "Social media (Meta, Instagram, TikTok)" },
       { val: "SearchAds", label: "Search ads (Google)" },
@@ -124,8 +124,10 @@ export const QUESTIONS: Question[] = [
   {
     id: "pain_point",
     section: "Pain Points",
-    type: "single",
-    text: "What is your single biggest frustration with advertising today?",
+    type: "multi",
+    max: 2,
+    hint: "Select up to 2 options",
+    text: "What is your biggest frustration with advertising today?",
     options: [
       { val: "ROI", label: "Can't measure ROI clearly", sub: "Spend money, don't know if it's working", score: 5 },
       { val: "WrongAudience", label: "Hard to reach the right audience", sub: "Ads shown to wrong people", score: 3 },
@@ -178,10 +180,10 @@ export const QUESTIONS: Question[] = [
     text: "If the format had strong proof — what budget would you allocate for a 30-day test?",
     options: [
       { val: "Nothing", label: "Nothing — not open to testing new formats", score: 0 },
-      { val: "Upto1k", label: "Up to £1,000", score: 5 },
-      { val: "1k-3k", label: "£1,000–£3,000", score: 10 },
-      { val: "3k-10k", label: "£3,000–£10,000", score: 16 },
-      { val: "Over10k", label: "Over £10,000", score: 22 },
+      { val: "Under5k", label: "Under ₹5,000", score: 5 },
+      { val: "5k-10k", label: "₹5,000–₹10,000", score: 10 },
+      { val: "10k-20k", label: "₹10,000–₹20,000", score: 16 },
+      { val: "Over20k", label: "Over ₹20,000", score: 22 },
     ],
   },
   {
@@ -190,13 +192,14 @@ export const QUESTIONS: Question[] = [
     type: "single",
     text: "Which city is your primary market?",
     options: [
-      { val: "London", label: "London" },
-      { val: "Manchester", label: "Manchester" },
-      { val: "Birmingham", label: "Birmingham" },
-      { val: "Leeds", label: "Leeds" },
-      { val: "Liverpool", label: "Liverpool" },
-      { val: "Glasgow", label: "Glasgow" },
-      { val: "Bristol", label: "Bristol" },
+      { val: "Mumbai", label: "Mumbai" },
+      { val: "Delhi", label: "Delhi" },
+      { val: "DelhiNCR", label: "Delhi NCR" },
+      { val: "Bangalore", label: "Bangalore" },
+      { val: "Hyderabad", label: "Hyderabad" },
+      { val: "Pune", label: "Pune" },
+      { val: "Chennai", label: "Chennai" },
+      { val: "Kolkata", label: "Kolkata" },
       { val: "Other", label: "Other / nationwide" },
     ],
   },
@@ -221,5 +224,5 @@ export const INDUSTRIES = [
 ];
 
 export const UK_CITIES = [
-  "London", "Manchester", "Birmingham", "Leeds", "Liverpool", "Glasgow", "Bristol",
+  "Mumbai", "Delhi", "DelhiNCR", "Bangalore", "Hyderabad", "Pune", "Chennai", "Kolkata",
 ];

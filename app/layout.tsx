@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Nomadz · Market Intelligence",
-  description: "Mobile out-of-home advertising — UK market intelligence platform.",
+  description: "Mobile out-of-home advertising — India market intelligence platform.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
