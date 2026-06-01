@@ -217,7 +217,6 @@ export const QUESTIONS: Question[] = [
     text: "Brands in your industry are already seeing the data behind this. Is 15 minutes too much to ask before you write off something that could move your numbers?",
     options: [
       { val: "YesThisWeek", label: "No — 15 minutes is worth it, reach out this week", score: 10 },
-      { val: "YesNextMonth", label: "No — worth it, but next month suits me better", score: 7 },
       { val: "CaseStudiesFirst", label: "Send the data first, then I'll decide", score: 4 },
       { val: "NoThanks", label: "Yes — I'm genuinely not interested", score: 0 },
     ],
